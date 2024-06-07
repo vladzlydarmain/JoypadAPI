@@ -1,5 +1,4 @@
 const {DataTypes, Sequelize} = require('sequelize')
-const express = require('express')
 
 const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/joypad', {
     dialect: "postgres",
@@ -16,7 +15,7 @@ const Group = sequelize.define("Group",{
     name: { 
         type: DataTypes.STRING, 
         allowNull: false,
-        unique: true
+        unique: false
     },
     description: {
         type: DataTypes.STRING,
@@ -24,12 +23,7 @@ const Group = sequelize.define("Group",{
         unique: false
     },
     admin_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false
-    },
-    users: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
+        type: DataTypes.BIGINT,
         allowNull: false,
         unique: false
     },
@@ -38,15 +32,13 @@ const Group = sequelize.define("Group",{
         allowNull: true,
         unique: false
     },
-    achievements: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
-        allowNull: true,
-        unique: false
-    },
     category: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER
+    },
+    code:{
+        type: DataTypes.STRING,
         allowNull: false,
-        unique: false
+        unique: true
     }
 })
 
@@ -63,11 +55,11 @@ const Messages = sequelize.define("Messages", {
         allowNull: false,
         unique: false
     },
-    steamID: {
+    steamid: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    groupID: {
+    groupid: {
         type: DataTypes.INTEGER,
         allowNull: false
     }
@@ -90,6 +82,11 @@ const GroupAchievements = sequelize.define("GroupAchievements", {
         type: DataTypes.STRING,
         allowNull: false,
         unique: false
+    },
+    category:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:false
     }
 })
 
@@ -105,46 +102,36 @@ const GroupCategory = sequelize.define("GroupCategory", {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
-    }
+    } 
 })
 
 const User = sequelize.define("User", {
     steamID: {
-        type:DataTypes.INTEGER,
+        type:DataTypes.BIGINT,
         allowNull:false,
         unique:true,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement:false
     },
-    groups: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
-        allowNull: true,
-        unique: false
-    }
-})
-
-const UserStats = sequelize.define("UserStats", {
-    id: {
-        type:DataTypes.INTEGER,
+    token:{
+        type:DataTypes.STRING,
         allowNull:false,
         unique:true,
-        primaryKey: true,
-        autoIncrement: true
     },
-    playtime: {
-        type: DataTypes.INTEGER,
+    avatar:{
+        type: DataTypes.STRING,
         allowNull: true,
         unique: false
+    }, 
+    code:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        unique:true,
     },
-    achievements: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
-        allowNull: true,
-        unique: false
-    },
-    steamID: {
-        type: DataTypes.INTEGER,
+    name:{
+        type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: false
     }
 })
 
@@ -165,8 +152,86 @@ const UserAchievements = sequelize.define("UserAchievements", {
         type: DataTypes.STRING,
         allowNull: false,
         unique: false
+    },
+    category:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:false
     }
 })
 
+const Category = sequelize.define("Category", {
+    id: {
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    }
+})
+
+const AchievementsCategory = sequelize.define('AchievementsCategory',{
+    id:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    name:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        unique:false
+    }
+})
+
+const UsersGroup = sequelize.define('UsersGroup', {
+    GroupId: {
+        type: DataTypes.BIGINT,
+        references: {
+            model: Group,
+            key: "id"
+        },
+    },
+    UserSteamID: {
+        type: DataTypes.BIGINT,
+        references: {
+            model: User,
+            key: "steamID"
+        }
+    }
+})
+
+const AchievementsUser = sequelize.define('AchievementsUser')
+const AchievementsGroup = sequelize.define('AchievementsGroup')
+
+User.belongsToMany(UserAchievements, {through:  AchievementsUser}) 
+UserAchievements.belongsToMany(User, {through:  AchievementsUser})
+Group.belongsToMany(GroupAchievements, {through:  AchievementsGroup})
+GroupAchievements.belongsToMany(Group, {through:  AchievementsGroup})
+Group.belongsToMany(User, {through:  UsersGroup})
+User.belongsToMany(Group, {through: UsersGroup})
+
 sequelize.authenticate()
-sequelize.sync()
+sequelize.sync() 
+
+module.exports = {
+    Group: Group, 
+    Messages: Messages,
+    GroupAchievements: GroupAchievements,
+    GroupCategory: GroupCategory,
+    User: User,
+    UserAchievements: UserAchievements,
+    Category: Category,
+    UsersGroup:UsersGroup,
+    AchievementsCategory:AchievementsCategory,
+    AchievementsUser:AchievementsUser,
+    AchievementsGroup:AchievementsGroup
+}
+
+
