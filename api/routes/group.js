@@ -4,9 +4,10 @@ const db = require('../../database/index.js')
 
 const router = express.Router()
 
-const userCheck = require("./test.js")
+const { userCheck } = require("./test.js")
 
 const crypto = require("crypto");
+const { error } = require('console');
 
 router.post('/', (req, res) => {
     userCheck(req, res, (user) => {
@@ -46,13 +47,7 @@ router.post('/', (req, res) => {
                 id:group.dataValues.id,
                 owner: admin_id
             })
-        })
-        // console.log('THIS IS NAME', name)
-        // console.log('THIS IS DESCRIPTION', description) 
-        // console.log("THIS IS ADMIN'S ID", admin_id)
-        // console.log('THIS IS CATEGORY', category)
-        
-                 
+        })       
     })
 })
 
@@ -101,9 +96,15 @@ router.delete('/:id', (req, res) => {
         })   
     })
 })
-
+ 
 router.post('/user', (req, res) => {
     const code = req.query.code
+    if(!code|| code == null){
+        return res.status(400).json({
+            code:400,
+            error:"Code is required"
+        })
+    }
     userCheck(req, res, (user) => {
         db.Group.findOne({where: {code: code}}).then((group) => {
             if(!group){
@@ -164,6 +165,34 @@ router.delete('/user/:id',(req,res)=>{
     })
 })
 
+router.get("/users/:id",(req,res)=>{
+    const id = req.params.id
+    fetch(`http://localhost:8000/group/${id}`,{
+        method:"GET"
+    }).then((grp)=>{
+        return grp.json()
+    }).then((group)=>{
+        if(group.code != 200){
+            return res.status(group.code).json({
+                code:group.code,
+                error:group.error
+            })
+        }
+        db.UsersGroup.findAll({where:{GroupId:id}, attributes:["UserSteamID"]}).then(async(users)=>{
+            const avatars = {}
+            for await(let user of users){
+                await db.User.findOne({where:{steamID:user.UserSteamID},attributes:["avatar"]}).then((avatar)=>{
+                    avatars[`${user.UserSteamID}`] = avatar.dataValues.avatar
+                })
+            }
+            return res.status(200).json({
+                code:200,
+                avatars:avatars
+            })
+        })
+    })
+  })
+
 router.post('/category', (req, res) => {
     const name = req.body.name
 
@@ -173,7 +202,7 @@ router.post('/category', (req, res) => {
             message: `Category was created with id of ${result.id}`,
             id:result.id
         })
-    })
+    }) 
 })
 
 router.get('/category/all', (req, res) => {
@@ -190,7 +219,7 @@ router.get('/category/:id', (req, res) => {
     db.Category.findOne({where: {id: id}}).then((result) => {
         return res.status(200).json({
             code: 200,
-            message: result
+            message: result 
         })
     })
 })

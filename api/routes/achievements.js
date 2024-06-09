@@ -110,7 +110,6 @@ router.post('/group', (req, res) => {
                 error: "Category wasn't found"
             })
         }
-
         
         db.GroupAchievements.create({name: name, description: description, category: category}).then((result) => {
             res.status(201).json({

@@ -1,6 +1,6 @@
 const {DataTypes, Sequelize} = require('sequelize')
 
-const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/joypad', {
+const sequelize = new Sequelize('postgres://postgres:1324@localhost:5432/joypad', {
     dialect: "postgres",
 })
 
@@ -17,7 +17,7 @@ const Group = sequelize.define("Group",{
         allowNull: false,
         unique: false
     },
-    description: {
+    description: { 
         type: DataTypes.STRING,
         allowNull: false,
         unique: false
@@ -56,8 +56,13 @@ const Messages = sequelize.define("Messages", {
         unique: false
     },
     steamid: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT, 
         allowNull: false
+    },
+    name:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false
     },
     groupid: {
         type: DataTypes.INTEGER,
@@ -84,6 +89,11 @@ const GroupAchievements = sequelize.define("GroupAchievements", {
         unique: false
     },
     category:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:false
+    },
+    cost:{
         type:DataTypes.INTEGER,
         allowNull:false,
         unique:false

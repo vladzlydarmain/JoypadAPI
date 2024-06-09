@@ -1,10 +1,11 @@
 const express = require('express')
 const db = require('../../database/index.js')
 const SteamAuth = require("node-steam-openid");
-const userCheck = require("./test.js")
+const { userCheck } = require("./test.js")
 const crypto = require("crypto");
 const cors = require('cors')
 const session = require('express-session');
+const { error } = require('console');
 
 const router = express.Router()
 
@@ -107,7 +108,7 @@ router.post('/auth/code',(req,res)=>{
 router.get("/achievements", async (req,res)=>{
     userCheck(req, res, (user) => {
       console.log(user.dataValues)
-      db.AchievementsUser.findAll({where:{UserSteamID:user.dataValues.steamID},attributes:['UserAchievementId'] }).then(async (achievs)=>{
+      db.AchievementsUser.findAll({where:{UserSteamID:user.dataValues.steamID},attributes:['UserAchievementId']}).then(async (achievs)=>{
         let data = []
         for await (let i of achievs){
           await db.UserAchievements.findOne({where:{id:i["UserAchievementId"]}}).then(async (result)=>{
@@ -157,6 +158,27 @@ router.post("/achievements",(req,res)=>{
           })
         })
       })
+    })
+  })
+})
+
+router.get("/groups",(req,res)=>{
+  userCheck(req,res,(user)=>{
+    db.UsersGroup.findAll({where:{UserSteamID:user.dataValues.steamID}, attributes:["GroupId"]}).then(async (groups)=>{
+      let data = []
+      for await (let i of groups){
+        await db.Group.findOne({where:{id:i["GroupId"]}}).then(async (result)=>{
+          if(result){
+            data.push(result.dataValues)
+          }
+        })
+      }
+      if(data.length > 0){
+        return res.status(200).json({
+          code: 200,
+          groups: data
+        })
+      }
     })
   })
 })
