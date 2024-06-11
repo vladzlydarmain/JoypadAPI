@@ -2,14 +2,14 @@ const express = require('express')
 const cors = require('cors')
 
 const routerUser = require("./routes/user.js")
-const routerGroup = require("./routes/group.js")
+const routerGroup = require("./routes/group.js") 
 const routerAchievements = require("./routes/achievements.js")
 const routerImage = require("./routes/image.js")
-const routerMessages = require("./routes/messages.js")
+const routerMessages = require("./routes/messages.js") 
 const db = require('../database/index.js')
 const { userCheckIo } = require("./routes/test.js")
 
-const port = 8000  
+const port = 8000 
 
 const app = express()
 const { createServer } = require('node:http');
@@ -38,13 +38,18 @@ app.use('/image', routerImage)
 app.use('/messages', routerMessages)
 
 io.on('connection', (socket) => { 
-    console.log('a user connected'); 
     socket.on("send",(arg)=>{
         userCheckIo(arg.token,(user)=>{
             db.Messages.create({value:arg.message,steamid:user.dataValues.steamID,groupid:arg.group,name:user.dataValues.name}).then((message)=>{
-                console.log(arg.group)
+                message.dataValues["avatar"] = user.dataValues.avatar
                 io.emit(`message:${arg.group}`,message.dataValues)
             })
+        })
+    })
+    socket.on("delete",(arg)=>{
+        userCheckIo(arg.token,(user)=>{
+            db.Messages.destroy({where:{id:arg.id}})
+            io.emit(`deleteMessage:${arg.groupId}`,arg)
         })
     })
 });

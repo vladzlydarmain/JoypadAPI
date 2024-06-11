@@ -40,7 +40,7 @@ router.get("/auth",async (req, res)=>{
     }
   })
   
-})
+}) 
 
 router.get("/auth/steam/authenticate",async (req, res) => {
   try {   

@@ -66,7 +66,7 @@ router.get('/:id', (req, res) => {
         if (result){
             return res.status(200).json({
                 code: 200,
-                groups: result
+                group: result
             })
         } else {
             return res.status(404).json({
@@ -89,18 +89,18 @@ router.delete('/:id', (req, res) => {
             }
 
             db.Group.destroy({where:{admin_id: user.dataValues.steamID,id:id}})
-            res.status(200).json({
+            res.status(200).json({  
                 code: 200,
                 message: `Group was successfully deleted`
-            })    
+            })      
         })   
     })
 })
  
 router.post('/user', (req, res) => {
     const code = req.query.code
-    if(!code|| code == null){
-        return res.status(400).json({
+    if(!code|| code == null){ 
+        return res.status(400).json({      
             code:400,
             error:"Code is required"
         })
@@ -165,7 +165,7 @@ router.delete('/user/:id',(req,res)=>{
     })
 })
 
-router.get("/users/:id",(req,res)=>{
+router.get("/users/avatar/:id",(req,res)=>{
     const id = req.params.id
     fetch(`http://localhost:8000/group/${id}`,{
         method:"GET"
@@ -182,7 +182,9 @@ router.get("/users/:id",(req,res)=>{
             const avatars = {}
             for await(let user of users){
                 await db.User.findOne({where:{steamID:user.UserSteamID},attributes:["avatar"]}).then((avatar)=>{
-                    avatars[`${user.UserSteamID}`] = avatar.dataValues.avatar
+                    if(avatar){
+                        avatars[`${user.UserSteamID}`] = avatar.dataValues.avatar
+                    }
                 })
             }
             return res.status(200).json({
@@ -191,7 +193,37 @@ router.get("/users/:id",(req,res)=>{
             })
         })
     })
-  })
+})
+
+router.get("/users/:id",(req,res)=>{
+    const id = req.params.id
+    fetch(`http://localhost:8000/group/${id}`,{
+        method:"GET"
+    }).then((grp)=>{
+        return grp.json()
+    }).then((group)=>{
+        if(group.code != 200){
+            return res.status(group.code).json({
+                code:group.code,
+                error:group.error
+            })
+        }
+        db.UsersGroup.findAll({where:{GroupId:id}, attributes:["UserSteamID"]}).then(async(users)=>{
+            const usrs = []
+            for await(let user of users){
+                await db.User.findOne({where:{steamID:user.UserSteamID},attributes:{exclude:['token']}}).then((usr)=>{
+                    if(usr){
+                        usrs.push(usr.dataValues)
+                    }
+                })
+            }
+            return res.status(200).json({
+                code:200,
+                users:usrs
+            })
+        })
+    })
+})
 
 router.post('/category', (req, res) => {
     const name = req.body.name

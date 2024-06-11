@@ -3,7 +3,6 @@ const {DataTypes, Sequelize} = require('sequelize')
 const sequelize = new Sequelize('postgres://postgres:1324@localhost:5432/joypad', {
     dialect: "postgres",
 })
-
 const Group = sequelize.define("Group",{
     id:{
         type:DataTypes.INTEGER,
@@ -51,7 +50,7 @@ const Messages = sequelize.define("Messages", {
         autoIncrement: true
     },
     value: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         unique: false
     },
@@ -141,6 +140,11 @@ const User = sequelize.define("User", {
     name:{
         type: DataTypes.STRING,
         allowNull: false,
+        unique: false
+    },
+    description:{
+        type: DataTypes.STRING,
+        allowNull: true,
         unique: false
     }
 })
