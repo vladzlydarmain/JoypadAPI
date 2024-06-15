@@ -195,10 +195,10 @@ router.get('/group/:id', (req, res) => {
             res.status(404).json({
                 code: 404,
                 error: "Group achievement wasn't found"
-            })
+            }) 
         }
     })
-})
+}) 
 
 router.post('/category/', (req, res) => {
     const name = req.body.name

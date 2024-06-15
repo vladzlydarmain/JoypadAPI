@@ -1,6 +1,6 @@
 const {DataTypes, Sequelize} = require('sequelize')
 
-const sequelize = new Sequelize('postgres://postgres:1324@localhost:5432/joypad', {
+const sequelize = new Sequelize('postgres://joypaddb_user:rkEmFMG7zebNGSM7LdNAtpf1GKY9xZIN@dpg-cpmsrquehbks73fuh98g-a.frankfurt-postgres.render.com/joypaddb?ssl=true', {
     dialect: "postgres",
 })
 const Group = sequelize.define("Group",{

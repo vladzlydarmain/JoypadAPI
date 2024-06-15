@@ -19,7 +19,7 @@ const io = require('socket.io')
     cors: {
       origin: '*',
     }
-});
+}); 
 
 
 app.use(express.json())

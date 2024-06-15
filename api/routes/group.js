@@ -18,7 +18,7 @@ router.post('/', (req, res) => {
         if(!name|| name == null){ 
             return res.status(400).json({
                 code: 400,
-                error: "Name must exist"
+                error: "Name must exist" 
             }) 
         }
         if(!description || description == null){
