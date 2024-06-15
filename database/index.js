@@ -1,6 +1,7 @@
 const {DataTypes, Sequelize} = require('sequelize')
+require('dotenv').config()
 
-const sequelize = new Sequelize('postgres://joypaddb_user:rkEmFMG7zebNGSM7LdNAtpf1GKY9xZIN@dpg-cpmsrquehbks73fuh98g-a.frankfurt-postgres.render.com/joypaddb?ssl=true', {
+const sequelize = new Sequelize(process.env.CONNECTPG, {
     dialect: "postgres",
 })
 const Group = sequelize.define("Group",{

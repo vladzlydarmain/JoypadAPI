@@ -5,9 +5,10 @@ const { userCheck } = require("./test.js")
 const crypto = require("crypto");
 const cors = require('cors')
 const session = require('express-session');
+require('dotenv').config()
 
 const router = express.Router()
-const apiKey = "249943650812803C36038EAB00FB1AB5"
+const apiKey = process.env.APIKEY
 
 router.use(cors())
 router.use(session({ secret: crypto.randomBytes(16).toString("hex"), resave: false, saveUninitialized: true }));
