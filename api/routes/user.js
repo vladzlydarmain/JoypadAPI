@@ -5,7 +5,6 @@ const { userCheck } = require("./test.js")
 const crypto = require("crypto");
 const cors = require('cors')
 const session = require('express-session');
-require('dotenv').config()
 
 const router = express.Router()
 const apiKey = process.env.APIKEY
