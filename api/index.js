@@ -40,9 +40,13 @@ app.use('/messages', routerMessages)
 io.on('connection', (socket) => { 
     socket.on("send",(arg)=>{
         userCheckIo(arg.token,(user)=>{
-            db.Messages.create({value:arg.message,steamid:user.dataValues.steamID,groupid:arg.group,name:user.dataValues.name}).then((message)=>{
-                message.dataValues["avatar"] = user.dataValues.avatar
-                io.emit(`message:${arg.group}`,message.dataValues)
+            db.UsersGroup.findOne({where:{UserSteamID:user.dataValues.steamID,GroupId:arg.group}}).then((association)=>{
+                if(!association.dataValues.muted){
+                    db.Messages.create({value:arg.message,steamid:user.dataValues.steamID,groupid:arg.group,name:user.dataValues.name}).then((message)=>{
+                        message.dataValues["avatar"] = user.dataValues.avatar
+                        io.emit(`message:${arg.group}`,message.dataValues)
+                    })
+                }
             })
         })
     })
@@ -50,6 +54,25 @@ io.on('connection', (socket) => {
         userCheckIo(arg.token,(user)=>{
             db.Messages.destroy({where:{id:arg.id}})
             io.emit(`deleteMessage:${arg.groupId}`,arg)
+        })
+    })
+    socket.on("mute",(arg)=>{
+        fetch("http://localhost:8000/group/mute/",{
+            method:"POST",
+            headers:{
+                token:arg.token,
+                "Content-Type": "application/json",
+            },
+            body:JSON.stringify({
+                groupId:arg.group,
+                targetId:arg.target
+            })
+        }).then((resp)=>{ 
+            return resp.json()
+        }).then((rp)=>{
+            if(rp.code==200){
+                io.emit(`mute:${arg.group}:${arg.target}`,rp.status)
+            }
         })
     })
 });

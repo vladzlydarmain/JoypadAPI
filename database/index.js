@@ -218,6 +218,11 @@ const UsersGroup = sequelize.define('UsersGroup', {
             model: User,
             key: "steamID"
         }
+    },
+    muted:{
+        type: DataTypes.BOOLEAN,
+        allowNull:false,
+        unique:false
     }
 })
 

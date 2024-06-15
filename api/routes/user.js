@@ -5,9 +5,9 @@ const { userCheck } = require("./test.js")
 const crypto = require("crypto");
 const cors = require('cors')
 const session = require('express-session');
-const { error } = require('console');
 
 const router = express.Router()
+const apiKey = "249943650812803C36038EAB00FB1AB5"
 
 router.use(cors())
 router.use(session({ secret: crypto.randomBytes(16).toString("hex"), resave: false, saveUninitialized: true }));
@@ -15,7 +15,7 @@ router.use(session({ secret: crypto.randomBytes(16).toString("hex"), resave: fal
 const steam = new SteamAuth({
   realm: "http://localhost:8000",
   returnUrl: "http://localhost:8000/user/auth/steam/authenticate/",
-  apiKey: "249943650812803C36038EAB00FB1AB5"
+  apiKey: apiKey
 });
   
 router.get("/auth",async (req, res)=>{
@@ -27,7 +27,6 @@ router.get("/auth",async (req, res)=>{
   }
   db.User.findOne({where:{token:token}}).then(async (user)=>{
     if(user == null || !user){
-      const redirectUrl = await steam.getRedirectUrl()
       return res.json({
         code:403,
         error:"Invalid token"
@@ -36,7 +35,7 @@ router.get("/auth",async (req, res)=>{
       return res.status(200).json({
         code:200,
         info:user.dataValues
-      })
+      }) 
     }
   })
   
@@ -98,11 +97,30 @@ router.post('/auth/code',(req,res)=>{
     } else {
       return res.status(404).json({
         code:200,
-        error:"User wasn`t found"
+        error:"User wasn`t found" 
       })
     }
   })
+})
 
+router.post('/description',(req,res)=>{
+  userCheck(req,res,(user)=>{
+    const description = req.body.description
+    if(!description){
+      return res.status(400).json({
+        code:400,
+        error:"Description required"
+      })
+    }
+    
+    user.update({description:description})
+    user.save()
+
+    return res.status(200).json({
+      code:200,
+      message:"Updated successfuly"
+    })
+  })
 })
 
 router.get("/achievements", async (req,res)=>{
