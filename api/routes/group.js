@@ -13,32 +13,32 @@ router.post('/', (req, res) => {
         const name = req.body.name
         const description = req.body.description
         const admin_id = user.dataValues.steamID
-        const category = req.body.category
+        let category = req.body.category
 
-        if(!name || name == null){ 
+        if(!name|| name == null){ 
             return res.status(400).json({
                 code: 400,
                 error: "Name must exist"
             }) 
         }
         if(!description || description == null){
+            console.log(description)
             return res.status(400).json({
                 code: 400,
                 error: "Description must exist"
             })
         }
-        if(!category || category == null){
-            return res.status(400).json({ 
-                code: 400,
-                error: "Description must exist"
-            })
+        if(!category|| category == null){
+            category = 1
         }
         const cd = crypto.randomBytes(3).toString("hex")
         db.Group.create({name: name,description: description,admin_id: admin_id, points: 0, category: category, code:cd}).then((group) => {
             console.log("THIS IS GROUP", group)
             
-            db.UsersGroup.create({UserSteamID:user.dataValues.steamID,GroupId:group.dataValues.id,muted:false})
+            db.UsersGroup.create({UserSteamID:user.dataValues.steamID,GroupId:group.dataValues.id, muted:false})
             
+            db.GroupsStats.create({groupID: group.dataValues.id, sentMessages: 0, deletedMessages: 0})
+
             res.status(201).json({
                 code: 201,
                 message: `Successfuly created group with id of ${group.dataValues.id}`,
@@ -291,9 +291,15 @@ router.get('/category/all', (req, res) => {
         })
     })
 })
-
+ 
 router.get('/category/:id', (req, res) => {
     const id = req.params.id
+    if(`${Number(id)}`=="Nan"){
+        return res.status(400).json({
+            code:400,
+            error:"Id(int) required"
+        })
+    }
     db.Category.findOne({where: {id: id}}).then((result) => {
         return res.status(200).json({
             code: 200,
@@ -314,6 +320,23 @@ router.get('/:id/category', (req, res) => {
         return res.status(200).json({
             code: 200,
             message: result
+        })
+    })
+})
+
+router.get('/stats/:id', (req, res) => {
+    const id = req.params.id
+    db.GroupsStats.findOne({where: {groupID: id}}).then((result) => {
+        if(!result || result == null || result == undefined){
+            return res.status(404).json({
+                code: 404,
+                error: "No groups were found"
+            })
+        } 
+
+        res.status(200).json({
+            code: 200,
+            message: result.dataValues
         })
     })
 })

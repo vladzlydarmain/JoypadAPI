@@ -49,6 +49,7 @@ router.get("/auth/steam/authenticate",async (req, res) => {
         const cd = crypto.randomBytes(7).toString("hex")
         console.log(user._json)
         db.User.create({steamID:user.steamid,token:crypto.randomBytes(16).toString("hex"),code:cd,avatar:user.avatar.large,name:user._json.personaname}).then((uss)=>{
+          db.UserStats.create({steamID: user.steamid, sentMessages: 0, deletedMessages: 0})
           const info = uss.dataValues 
           return res.redirect(`http://localhost:3000/profile/${info.token}`)
         })
@@ -124,27 +125,27 @@ router.post('/description',(req,res)=>{
 })
 
 router.get("/achievements", async (req,res)=>{
-    userCheck(req, res, (user) => {
-      console.log(user.dataValues)
-      db.AchievementsUser.findAll({where:{UserSteamID:user.dataValues.steamID},attributes:['UserAchievementId']}).then(async (achievs)=>{
-        let data = []
-        for await (let i of achievs){
-          await db.UserAchievements.findOne({where:{id:i["UserAchievementId"]}}).then(async (result)=>{
-            if(result){
-              data.push(result.dataValues)
-              console.log("THIS IS DATA LENGTH", data)
-            }
-          })
-        }
-        if(data.length > 0){
-          return res.status(200).json({
-            code: 200,
-            message: data
-          })
-        }
-      })
+  userCheck(req, res, (user) => {
+    console.log(user.dataValues)
+    db.AchievementsUser.findAll({where:{UserSteamID:user.dataValues.steamID},attributes:['UserAchievementId']}).then(async (achievs)=>{
+      let data = []
+      for await (let i of achievs){
+        await db.UserAchievements.findOne({where:{id:i["UserAchievementId"]}}).then(async (result)=>{
+          if(result){
+            data.push(result.dataValues)
+            console.log("THIS IS DATA LENGTH", data)
+          }
+        })
+      }
+      if(data.length > 0){
+        return res.status(200).json({
+          code: 200,
+          message: data
+        })
+      }
     })
   })
+})
 
 router.post("/achievements",(req,res)=>{
   userCheck(req, res, (user) => {
@@ -176,7 +177,7 @@ router.post("/achievements",(req,res)=>{
           })
         })
       })
-    })
+    }) 
   })
 })
 
@@ -197,6 +198,17 @@ router.get("/groups",(req,res)=>{
           groups: data
         })
       }
+    })
+  })
+})
+
+router.get("/stats", (req, res) => {
+  userCheck(req, res, (user) => {
+    db.UserStats.findOne({where: {steamID: user.dataValues.steamID}}).then((usr) => {
+      res.status(200).json({
+        code: 200,
+        message: usr.dataValues
+      })
     })
   })
 })

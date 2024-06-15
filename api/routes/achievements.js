@@ -8,6 +8,8 @@ router.post('/user', (req, res) => {
     const name = req.body.name
     const description = req.body.description
     const categoryId = req.body.category
+    const value = req.body.value
+
     if(!name){
         return res.status(400).json({
             code: 400,
@@ -27,6 +29,21 @@ router.post('/user', (req, res) => {
             error: "Category id must exist"
         })
     }
+
+    if(!value){
+        return res.status(400).json({
+            code: 400,
+            error: "Value must must exist"
+        })
+    }
+
+    if(typeof value != 'number'){
+        return res.status(400).json({
+            code: 400,
+            error: "Value must have a number value"
+        })
+    }
+
     db.AchievementsCategory.findOne({where:{id:categoryId}}).then((cat)=>{
         if(!cat){
             return res.status(404).json({
@@ -34,7 +51,7 @@ router.post('/user', (req, res) => {
                 error: "Category wasn't found"
             })
         }
-        db.UserAchievements.create({name: name, description: description,category:categoryId}).then((result) => {
+        db.UserAchievements.create({name: name, description: description,category:categoryId, value: value}).then((result) => {
             res.status(201).json({
                 code: 201,
                 message: `User Achievement was created with id of ${result.id}`,
@@ -81,6 +98,8 @@ router.post('/group', (req, res) => {
     const name = req.body.name
     const description = req.body.description
     const category = req.body.category
+    const cost = req.body.cost
+    const value = req.body.value
 
     if(!name){
         return res.status(400).json({
@@ -103,6 +122,34 @@ router.post('/group', (req, res) => {
         })
     }
 
+    if(!cost){
+        return res.status(400).json({
+            code: 400,
+            error: "Cost must exist"
+        })
+    }
+
+    if(typeof cost != 'number'){
+        return res.status(400).json({
+            code: 400,
+            error: "Cost must have a number value"
+        })
+    }
+
+    if(!value){
+        return res.status(400).json({
+            code: 400,
+            error: "Value must must exist"
+        })
+    }
+
+    if(typeof value != 'number'){
+        return res.status(400).json({
+            code: 400,
+            error: "Value must have a number value"
+        })
+    }
+
     db.AchievementsCategory.findOne({where:{id:category}}).then((cat)=>{
         if(!cat){
             return res.status(404).json({
@@ -111,7 +158,7 @@ router.post('/group', (req, res) => {
             })
         }
         
-        db.GroupAchievements.create({name: name, description: description, category: category}).then((result) => {
+        db.GroupAchievements.create({name: name, description: description, category: category, cost: cost, value: value}).then((result) => {
             res.status(201).json({
                 code: 201,
                 message: `Group Achievement was successfully created with id of ${result.dataValues.id}`

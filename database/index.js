@@ -96,6 +96,11 @@ const GroupAchievements = sequelize.define("GroupAchievements", {
         type:DataTypes.INTEGER,
         allowNull:false,
         unique:false
+    },
+    value: {
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:false
     }
 })
 
@@ -171,6 +176,11 @@ const UserAchievements = sequelize.define("UserAchievements", {
         type:DataTypes.INTEGER,
         allowNull:false,
         unique:false
+    },
+    value: {
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:false
     }
 })
 
@@ -226,6 +236,30 @@ const UsersGroup = sequelize.define('UsersGroup', {
     }
 })
 
+const UserStats = sequelize.define("UserStats", {
+    steamID: {
+        type: DataTypes.BIGINT
+    },
+    sentMessages: {
+        type: DataTypes.INTEGER
+    },
+    deletedMessages: {
+        type: DataTypes.INTEGER
+    }
+}) 
+
+const GroupsStats = sequelize.define("GroupsStats", {
+    groupID: {
+        type: DataTypes.INTEGER
+    },
+    sentMessages: {
+        type: DataTypes.INTEGER
+    },
+    deletedMessages: {
+        type: DataTypes.INTEGER
+    }
+})
+
 const AchievementsUser = sequelize.define('AchievementsUser')
 const AchievementsGroup = sequelize.define('AchievementsGroup')
 
@@ -250,7 +284,9 @@ module.exports = {
     UsersGroup:UsersGroup,
     AchievementsCategory:AchievementsCategory,
     AchievementsUser:AchievementsUser,
-    AchievementsGroup:AchievementsGroup
+    AchievementsGroup:AchievementsGroup,
+    UserStats: UserStats,
+    GroupsStats: GroupsStats
 }
 
 
