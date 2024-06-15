@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
         })
         
     socket.on("mute",(arg)=>{
-        fetch("http://localhost:8000/group/mute/",{
+        fetch("https://joypadapi.onrender.com/group/mute/",{
             method:"POST",
             headers:{
                 token:arg.token,

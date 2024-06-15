@@ -178,7 +178,7 @@ router.post('/user', (req, res) => {
 router.delete('/user/:id',(req,res)=>{
     userCheck(req, res, (user) => {
         const id = Number(req.params.id)
-        fetch(`http://localhost:8000/group/${id}`,{
+        fetch(`https://joypadapi.onrender.com/group/${id}`,{
             method:"GET"
         }).then((grp)=>{
             return grp.json()
@@ -212,7 +212,7 @@ router.delete('/user/:id',(req,res)=>{
 
 router.get("/users/avatar/:id",(req,res)=>{
     const id = req.params.id
-    fetch(`http://localhost:8000/group/${id}`,{
+    fetch(`https://joypadapi.onrender.com/group/${id}`,{
         method:"GET"
     }).then((grp)=>{
         return grp.json()
@@ -242,7 +242,7 @@ router.get("/users/avatar/:id",(req,res)=>{
 
 router.get("/users/:id",(req,res)=>{
     const id = req.params.id
-    fetch(`http://localhost:8000/group/${id}`,{
+    fetch(`https://joypadapi.onrender.com/group/${id}`,{
         method:"GET"
     }).then((grp)=>{
         return grp.json()
