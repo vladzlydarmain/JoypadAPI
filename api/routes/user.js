@@ -51,11 +51,11 @@ router.get("/auth/steam/authenticate",async (req, res) => {
         db.User.create({steamID:user.steamid,token:crypto.randomBytes(16).toString("hex"),code:cd,avatar:user.avatar.large,name:user._json.personaname}).then((uss)=>{
           db.UserStats.create({steamID: user.steamid, sentMessages: 0, deletedMessages: 0})
           const info = uss.dataValues 
-          return res.redirect(`http://localhost:3000/profile/${info.token}`)
+          return res.redirect(`https://joypad.onrender.com/profile/${info.token}`)
         })
       } else {
         const info = userDB.dataValues
-        return res.redirect(`http://localhost:3000/profile/${info.token}`)
+        return res.redirect(`https://joypad.onrender.com/profile/${info.token}`)
       }
     })
   } catch (error){
