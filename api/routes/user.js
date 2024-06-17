@@ -22,12 +22,6 @@ const steam = new SteamAuth({
 router.get("/auth",async (req, res)=>{
   const token = req.headers.token 
   const type = req.headers.type
-  if(!type){
-    return res.status(400).json({
-      code:400,
-      error:"Type is required"
-    })
-  }
   if(!token || token == null && type != "app"){
     const redirectUrl = await steam.getRedirectUrl()
     // console.log(redirectUrl)
