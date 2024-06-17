@@ -80,6 +80,7 @@ io.on('connection', (socket) => {
             db.UserStats.increment("deletedMessages", {by: 1, where: {steamID: user.dataValues.steamID}})
             db.GroupsStats.increment("deletedMessages", {by: 1, where: {groupID: arg.id}})
             db.Messages.destroy({where:{id:arg.id}})
+            io.emit(`deleteMessage:${arg.groupId}`,arg)
             db.UserAchievements.findAll().then((resul) => {
                 resul.map((resl) => {
                         db.UserStats.findOne({where: {steamID: user.dataValues.steamID, deletedMessages: resl.value}}).then((result) => {
