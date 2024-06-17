@@ -5,6 +5,7 @@ const { userCheck } = require("./test.js")
 const crypto = require("crypto");
 const cors = require('cors')
 const session = require('express-session');
+const { error } = require('console');
 
 const router = express.Router()
 const apiKey = process.env.APIKEY
@@ -20,10 +21,22 @@ const steam = new SteamAuth({
   
 router.get("/auth",async (req, res)=>{
   const token = req.headers.token 
-  if(!token || token == null){
+  const type = req.headers.type
+  if(!type){
+    return res.status(400).json({
+      code:400,
+      error:"Type is required"
+    })
+  }
+  if(!token || token == null && type != "app"){
     const redirectUrl = await steam.getRedirectUrl()
     // console.log(redirectUrl)
     return res.redirect(redirectUrl);
+  } else if (!token || token == null && type == "app"){
+    return res.status(400).json({
+      code:400,
+      error:"Token is required"
+    })
   }
   db.User.findOne({where:{token:token}}).then(async (user)=>{
     if(user == null || !user){
