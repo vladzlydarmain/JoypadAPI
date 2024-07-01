@@ -5,7 +5,6 @@ const { userCheck } = require("./test.js")
 const crypto = require("crypto");
 const cors = require('cors')
 const session = require('express-session');
-const { error } = require('console');
 
 const router = express.Router()
 const apiKey = process.env.APIKEY
@@ -15,7 +14,7 @@ router.use(session({ secret: crypto.randomBytes(16).toString("hex"), resave: fal
 
 const steam = new SteamAuth({
   realm: "https://joypadapi.onrender.com",
-  returnUrl: "https://joypadapi.onrender.com/user/auth/steam/authenticate/",
+  returnUrl: "https://joypadapi.onrender.com/user/steam/authenticate/",
   apiKey: apiKey
 });
   

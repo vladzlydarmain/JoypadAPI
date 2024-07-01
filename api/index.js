@@ -22,7 +22,7 @@ const io = require('socket.io')
 }); 
 
 
-app.use(express.json())
+app.use(express.json()) 
 app.use(express.urlencoded({ extended: true }))
 app.use(cors()) 
 app.use((req, res, next) => {
@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
     socket.on("delete",(arg)=>{
         userCheckIo(arg.token,(user)=>{ 
             db.UserStats.increment("deletedMessages", {by: 1, where: {steamID: user.dataValues.steamID}})
-            db.GroupsStats.increment("deletedMessages", {by: 1, where: {groupID: arg.id}})
+            db.GroupsStats.increment("deletedMessages", {by: 1, where: {groupID: arg.groupId}})
             db.Messages.destroy({where:{id:arg.id}})
             io.emit(`deleteMessage:${arg.groupId}`,arg)
             db.UserAchievements.findAll().then((resul) => {
