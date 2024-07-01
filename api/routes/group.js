@@ -256,7 +256,7 @@ router.get("/users/:id",(req,res)=>{
         db.UsersGroup.findAll({where:{GroupId:id}, attributes:["UserSteamID","muted"]}).then(async(users)=>{
             const usrs = []
             for await(let user of users){
-                await db.User.findOne({where:{steamID:user.UserSteamID},attributes:{exclude:['token']}}).then((usr)=>{
+                await db.User.findOne({where:{steamID:user.UserSteamID},attributes:{exclude:['token','code']}}).then((usr)=>{
                     if(usr){
                         const modusr = usr.dataValues
                         modusr["mute"] = user.muted
