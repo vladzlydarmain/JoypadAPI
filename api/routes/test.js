@@ -3,8 +3,8 @@ const db = require('../../database/index.js')
 function userCheck(req,res,callback){
     const token = req.headers.token
     if(!token || token == null){
-      return res.status(404).json({
-        status:404,
+      return res.status(400).json({
+        status:400,
         message:"Token not found"
       })
     }
@@ -22,8 +22,8 @@ function userCheck(req,res,callback){
 
 function userCheckIo(token,callback){
   if(!token || token == null){
-    return res.status(404).json({
-      status:404,
+    return res.status(400).json({
+      status:400,
       message:"Token not found"
     })
   }
