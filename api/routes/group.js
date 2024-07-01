@@ -274,6 +274,12 @@ router.get("/users/:id",(req,res)=>{
 
 router.post('/category', (req, res) => {
     const name = req.body.name
+    if(!name || name == null){
+        return res.status(400).json({
+            code:400,
+            error:"Name is required"
+        })
+    }
     db.Category.create({name: name}).then((result) => {
         return res.status(201).json({
             code: 201,
