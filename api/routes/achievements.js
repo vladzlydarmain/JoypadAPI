@@ -167,7 +167,7 @@ router.post('/group', (req, res) => {
     })
 })
 
-router.get('/group', (req, res) => {
+router.get('/group/all', (req, res) => {
     db.GroupAchievements.findAll().then((result) => {
         if(result){
             res.status(200).json({
