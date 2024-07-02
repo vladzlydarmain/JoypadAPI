@@ -268,7 +268,7 @@ Occurs when the user forgot to enter an id in the query parameters
 ```json
 {
     "code":404,
-    error:"Achievement wasn`t found"
+    "error":"Achievement wasn`t found"
 }
 ```
 Occurs when the user entered wrong id
@@ -278,7 +278,7 @@ Occurs when the user entered wrong id
 ```json
 {
     "code":405,
-    error:"User already have this achievement"
+    "error":"User already have this achievement"
 }
 ```
 Occurs when the user alredy have achievement with this id
