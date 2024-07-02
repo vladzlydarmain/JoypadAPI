@@ -14,7 +14,7 @@ router.use(session({ secret: crypto.randomBytes(16).toString("hex"), resave: fal
 
 const steam = new SteamAuth({
   realm: "https://joypadapi.onrender.com",
-  returnUrl: "https://joypadapi.onrender.com/user/steam/authenticate/",
+  returnUrl: "https://joypadapi.onrender.com/user/auth/steam/authenticate/",
   apiKey: apiKey
 });
   
